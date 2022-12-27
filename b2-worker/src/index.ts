@@ -1,6 +1,6 @@
 import { getB2Token } from "./b2";
 import { createRuleSet, getRuleSetID, updateRuleSet } from "./cf";
-import { Env } from "./env";
+import { Env } from "./bindings";
 
 export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {

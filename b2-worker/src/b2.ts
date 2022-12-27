@@ -1,24 +1,25 @@
+import { request } from "./utils";
+
 type B2TokenResponse = {
   authorizationToken: string;
 };
+
+const B2TOKEN_URL = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account";
 
 export async function getB2Token(
   username: string,
   password: string
 ): Promise<string> {
-  const response = await fetch(
-    "https://api.backblazeb2.com/b2api/v2/b2_authorize_account",
+  const resp = await request(
+    "GET",
+    B2TOKEN_URL,
     {
-      method: "GET",
-      headers: {
-        Authorization: "Basic " + btoa(username + ":" + password),
-      },
-    }
+      Authorization: "Basic " + btoa(username + ":" + password),
+    },
+    null,
+    null
   );
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, text: ${text}`);
-  }
-  let data = (await response.json()) as B2TokenResponse;
+
+  let data = resp as B2TokenResponse;
   return data.authorizationToken;
 }

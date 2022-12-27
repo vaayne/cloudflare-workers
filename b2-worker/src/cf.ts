@@ -1,4 +1,5 @@
-import { Env } from "./env";
+import { Env } from "./bindings";
+import { request } from "./utils";
 
 const CF_API_HOST = "https://api.cloudflare.com/client/v4";
 const REQUEST_PHASE = "http_request_late_transform";
@@ -27,31 +28,7 @@ type ListRulesetsResponse = {
   success: boolean;
 };
 
-export async function getRuleSetID(env: Env): Promise<string> {
-  const response = await fetch(
-    CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets",
-    {
-      method: "GET",
-      headers: buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY),
-    }
-  );
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`HTTP error! status: ${response.status}, text: ${text}`);
-  }
-  const data = (await response.json()) as ListRulesetsResponse;
-  // console.log("List rulesets: " + JSON.stringify(data));
-  let rulesetId = "";
-  for (const rule of data.result) {
-    if (rule.phase == REQUEST_PHASE) {
-      rulesetId = rule.id;
-      break;
-    }
-  }
-  return rulesetId;
-}
-
-export function buildRuleSetBody(env: Env, token: string) {
+function buildRuleSetBody(env: Env, token: string) {
   return {
     name: "Set auth header ruleset",
     kind: "zone",
@@ -76,50 +53,48 @@ export function buildRuleSetBody(env: Env, token: string) {
   };
 }
 
-export async function createRuleSet(env: Env, token: string) {
-  const response = await fetch(
-    CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets",
-    {
-      method: "POST",
-      headers: buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY),
-      body: JSON.stringify(buildRuleSetBody(env, token)),
-    }
-  );
+async function getRuleSetID(env: Env): Promise<string> {
+  const url = CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets";
+  const headers = buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY);
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(
-      `HTTP error! status: ${response.status}, text: ${JSON.stringify(text)}`
-    );
+  let data = (await request(
+    "GET",
+    url,
+    headers,
+    null,
+    null
+  )) as ListRulesetsResponse;
+
+  // console.log("List rulesets: " + JSON.stringify(data));
+  let rulesetId = "";
+  for (const rule of data.result) {
+    if (rule.phase == REQUEST_PHASE) {
+      rulesetId = rule.id;
+      break;
+    }
   }
-  const data = await response.json();
+  return rulesetId;
+}
+
+async function createRuleSet(env: Env, token: string) {
+  const url = CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets";
+  const headers = buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY);
+  const body = JSON.stringify(buildRuleSetBody(env, token));
+  const data = await request("POST", url, headers, null, body);
   console.log("Create rule set: " + JSON.stringify(data));
 }
 
-export async function updateRuleSet(
-  env: Env,
-  rulesetID: string,
-  token: string
-) {
+async function updateRuleSet(env: Env, rulesetID: string, token: string) {
   const body = JSON.stringify({
     rules: buildRuleSetBody(env, token).rules,
   });
+  const url =
+    CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets/" + rulesetID;
+  const headers = buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY);
 
-  const response = await fetch(
-    CF_API_HOST + "/zones/" + env.CF_ZONE_ID + "/rulesets/" + rulesetID,
-    {
-      method: "PUT",
-      headers: buildCFHeaders(env.CF_EMAIL, env.CF_API_KEY),
-      body: body,
-    }
-  );
+  const data = await request("PUT", url, headers, null, body);
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(
-      `HTTP error! status: ${response.status}, text: ${JSON.stringify(text)}`
-    );
-  }
-  const data = await response.json();
   console.log("Update rule set: " + JSON.stringify(data));
 }
+
+export { getRuleSetID, createRuleSet, updateRuleSet };
