@@ -1,7 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono as Hono } from "@hono/zod-openapi";
 import { bearerAuth } from "hono/bearer-auth";
-import { register_index_route } from "./apis";
 import { register_reader_route } from "./apis/reader";
 import { register_summary_route } from "./apis/summary";
 
@@ -44,8 +43,11 @@ app.get(
 );
 
 // register routes
-register_index_route(app);
 register_reader_route(app);
 register_summary_route(app);
+
+app.get("/", async (c) => {
+  return c.redirect("/ui")
+})
 
 export default app;
