@@ -1,6 +1,6 @@
 import { webReader } from "./web_reader";
 
-async function webSummary(
+export async function webSummary(
   url: string,
   page_content: string | null
 ): Promise<Response> {
@@ -28,5 +28,3 @@ async function webSummary(
     },
   });
 }
-
-export { webSummary };
