@@ -1,14 +1,54 @@
+import { createRoute, z } from "@hono/zod-openapi";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import { webSummary } from "../libs/web_summary";
 
-export async function handle_summary(c: Context) {
+const ParamsSchema = z.object({
+  url: z
+    .string()
+    .min(5)
+    .openapi({
+      param: {
+        name: "url",
+        in: "path",
+      },
+      example: "https://example.com",
+      description: "The URL of the page to summarize",
+    }),
+});
+
+const route = createRoute({
+  method: "get",
+  path: "/api/summary/{url}",
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  request: {
+    params: ParamsSchema,
+  },
+  responses: {
+    200: {
+      content: {
+        "text/plain": {
+          schema: z.string(),
+        },
+        "event-stream": {
+          schema: z.string(),
+        },
+      },
+      description: "Returns a summary of a web page",
+    },
+  },
+});
+
+async function handle_summary(c: Context) {
   const url = c.req.param("url");
-  console.log(`summary url: ${url}`);
   const resp = await webSummary(url, null);
   const reader = resp.body.getReader();
 
-  if (c.req.header("accept") === "event-stream") {
+  if (c.req.header("accept") === "text/event-stream") {
     return streamSSE(c, async (stream) => {
       let result;
       const decoder = new TextDecoder("utf-8");
@@ -46,4 +86,8 @@ export async function handle_summary(c: Context) {
   }
 
   return c.text(text);
+}
+
+export function register_summary_route(app: any) {
+  app.openapi(route, handle_summary);
 }

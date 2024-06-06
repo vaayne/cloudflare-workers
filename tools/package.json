@@ -1,10 +1,14 @@
 {
+  "license": "MIT",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
-    "hono": "^4.4.2"
+    "@hono/swagger-ui": "^0.2.2",
+    "@hono/zod-openapi": "^0.14.2",
+    "hono": "^4.4.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240529.0",

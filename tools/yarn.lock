@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@asteasolutions/zod-to-openapi@^7.0.0":
+  version "7.0.0"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/@asteasolutions/zod-to-openapi/-/zod-to-openapi-7.0.0.tgz#8713b2171000521019b5e69120f3ccbbffde6bbe"
+  integrity sha512-rJRKHD2m6nUb/9ZheeN8nqOURX24WTzY8Sex1ZKT0Kpx+xfpRcD0fTD6vEeXNHGaDGxzu65Jj/jb2x6nLTjcMw==
+  dependencies:
+    openapi3-ts "^4.1.2"
+
 "@cloudflare/kv-asset-handler@0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@cloudflare/kv-asset-handler/-/kv-asset-handler-0.3.2.tgz#06437b75664729823ac9033b89f06a3b078e4f55"
@@ -173,6 +180,24 @@
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
   integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
+
+"@hono/swagger-ui@^0.2.2":
+  version "0.2.2"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/@hono/swagger-ui/-/swagger-ui-0.2.2.tgz#6115a551154e8ec602bf863e6e5780cc8c1a7820"
+  integrity sha512-Bco6XdKkTP7yIVWXpquLQayvjwzDmsmsESjF7VcrU/ZPTYafGvvpHf7Z6PHTWyp+JpdYORZXlyZ75T3At2KfAA==
+
+"@hono/zod-openapi@^0.14.2":
+  version "0.14.2"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/@hono/zod-openapi/-/zod-openapi-0.14.2.tgz#cb60b5a53ac2e1f11716c56cb8152cc53165445c"
+  integrity sha512-nt4TCMwGebajiJ5QEZ2QOVRp3N7GMLs1P7csNQJSu6Aean4D+8TWgZTaAJSytLvVZWy90qnBbpRlVSS6C6M+0g==
+  dependencies:
+    "@asteasolutions/zod-to-openapi" "^7.0.0"
+    "@hono/zod-validator" "0.2.2"
+
+"@hono/zod-validator@0.2.2":
+  version "0.2.2"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/@hono/zod-validator/-/zod-validator-0.2.2.tgz#929a1c40aee5eac1ed9c84094d6d977e0b70187a"
+  integrity sha512-dSDxaPV70Py8wuIU2QNpoVEIOSzSXZ/6/B/h4xA7eOMz7+AarKTSGV8E6QwrdcCbBLkpqfJ4Q2TmBO0eP1tCBQ==
 
 "@jridgewell/resolve-uri@^3.0.3":
   version "3.1.2"
@@ -466,6 +491,13 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
+openapi3-ts@^4.1.2:
+  version "4.3.2"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/openapi3-ts/-/openapi3-ts-4.3.2.tgz#a1a11eb5e0bc557210a4ec9b627711af8fb19b41"
+  integrity sha512-IvKNb3hPHwfuyVJnseTsFvZ0DO2EODpitYMsLcmfVwJ2p41zAHh2VDConzLLEB5h5YFbne9vv1zZxCeUICYZ8A==
+  dependencies:
+    yaml "^2.4.2"
+
 path-parse@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
@@ -633,6 +665,11 @@ xxhash-wasm@^1.0.1:
   resolved "https://registry.yarnpkg.com/xxhash-wasm/-/xxhash-wasm-1.0.2.tgz#ecc0f813219b727af4d5f3958ca6becee2f2f1ff"
   integrity sha512-ibF0Or+FivM9lNrg+HGJfVX8WJqgo+kCLDc4vx6xMeTce7Aj+DLttKbxxRR/gNLSAelRc1omAPlJ77N/Jem07A==
 
+yaml@^2.4.2:
+  version "2.4.3"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/yaml/-/yaml-2.4.3.tgz#0777516b8c7880bcaa0f426a5410e8d6b0be1f3d"
+  integrity sha512-sntgmxj8o7DE7g/Qi60cqpLBA3HG3STcDA0kO+WfB05jEKhZMbY7umNm2rBpQvsmZ16/lPXCJGW2672dgOUkrg==
+
 youch@^3.2.2:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/youch/-/youch-3.3.3.tgz#50cfdf5bc395ce664a5073e31b712ff4a859d928"
@@ -642,7 +679,7 @@ youch@^3.2.2:
     mustache "^4.2.0"
     stacktracey "^2.1.8"
 
-zod@^3.20.6:
+zod@^3.20.6, zod@^3.23.8:
   version "3.23.8"
-  resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
+  resolved "https://zuora.jfrog.io/zuora/api/npm/zuora-npm/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==

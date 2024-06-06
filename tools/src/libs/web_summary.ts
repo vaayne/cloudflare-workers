@@ -4,6 +4,7 @@ export async function webSummary(
   url: string,
   page_content: string | null
 ): Promise<Response> {
+  console.log(`summary url: ${url}`);
   if (page_content == null) {
     const doc = await webReader(url);
     page_content = doc.data.content;

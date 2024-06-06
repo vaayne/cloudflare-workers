@@ -1,5 +1,5 @@
 export async function webReader(url: string): Promise<any> {
-    console.log(`webReader url: ${url}`);
+  console.log(`webReader url: ${url}`);
   const response = await fetch(`https://r.jina.ai/${url}`, {
     method: "GET",
     headers: {
@@ -9,4 +9,3 @@ export async function webReader(url: string): Promise<any> {
   });
   return await response.json();
 }
-
