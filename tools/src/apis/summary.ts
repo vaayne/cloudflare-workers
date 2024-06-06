@@ -34,7 +34,7 @@ const route = createRoute({
         "text/plain": {
           schema: z.string(),
         },
-        "event-stream": {
+        "text/event-stream": {
           schema: z.string(),
         },
       },
