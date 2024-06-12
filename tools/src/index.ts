@@ -4,7 +4,7 @@ import { bearerAuth } from "hono/bearer-auth";
 import { register_reader_route } from "./apis/reader";
 import { register_searcher_route } from "./apis/searcher";
 import { register_summary_route } from "./apis/summary";
-import { register_pansearch_route } from "./apis/pansearch";
+import { registerPansearchRoute } from "./apis/pansearch";
 
 type Bindings = {
   API_TOKEN: string;
@@ -48,8 +48,7 @@ app.get(
 register_reader_route(app);
 register_searcher_route(app);
 register_summary_route(app);
-
-register_pansearch_route(app);
+registerPansearchRoute(app);
 
 app.get("/", async (c) => {
   return c.redirect("/ui")

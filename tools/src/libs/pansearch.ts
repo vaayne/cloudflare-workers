@@ -1,13 +1,12 @@
-const baseUrl = "https://www.pansearch.me";
+const BASE_URL = "https://www.pansearch.me";
 
-// Refactored to use a more descriptive function name and added documentation
 /**
  * Fetches the build ID from the base URL's HTML content.
  * @returns {Promise<string>} The build ID if found, otherwise an empty string.
  */
 async function fetchBuildId(): Promise<string> {
   try {
-    const response = await fetch(baseUrl);
+    const response = await fetch(BASE_URL);
     const pageContent = await response.text();
     const regex = /"build_id":"(.*?)"/;
     const match = regex.exec(pageContent);
@@ -29,14 +28,14 @@ interface ResponseData {
  * @param {string} query - The search query.
  * @returns {Promise<any>} The search results.
  */
-async function search(query: string): Promise<any> {
+export async function search(query: string): Promise<any> {
   try {
     const buildId = await fetchBuildId();
     if (!buildId) {
       throw new Error("Build ID not found.");
     }
 
-    const searchUrl = `${baseUrl}/_next/data/${buildId}/search.json`;
+    const searchUrl = `${BASE_URL}/_next/data/${buildId}/search.json`;
     const queryParams = new URLSearchParams({
       pan: "aliyundrive",
       keyword: query,

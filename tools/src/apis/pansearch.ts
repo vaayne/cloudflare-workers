@@ -14,7 +14,7 @@ const PansearchResponseSchema = z.array(z.any());
  * Registers the pansearch route with the provided app.
  * @param {OpenAPIHono<any>} app - The Hono app instance.
  */
-export function register_pansearch_route(app: OpenAPIHono<any>) {
+export function registerPansearchRoute(app: OpenAPIHono<any>) {
   app.get(
     '/pansearch',
     {
