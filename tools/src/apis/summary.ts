@@ -46,7 +46,11 @@ const route = createRoute({
 async function handle_summary(c: Context) {
   const url = c.req.param("url");
   const resp = await webSummary(url, null);
-  const reader = resp.body.getReader();
+  const reader = resp.body?.getReader();
+
+  if (!reader) {
+    return c.text("Error reading the response");
+  }
 
   if (c.req.header("accept") === "text/event-stream") {
     return streamSSE(c, async (stream) => {

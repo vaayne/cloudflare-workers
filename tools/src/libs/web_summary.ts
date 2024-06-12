@@ -1,4 +1,4 @@
-import { webReader } from "./web_reader";
+import { webReader } from "./jina_reader";
 
 export async function webSummary(
   url: string,

@@ -1,5 +1,5 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { webReader } from "../libs/web_reader";
+import { webReader } from "../libs/jina_reader";
 
 const ParamsSchema = z.object({
   url: z
@@ -27,7 +27,7 @@ const WebPageContentSchema = z
       example: "This is the content of the page",
     }),
   })
-  .openapi("WebPageContent");
+  .openapi("WebReaderResponseData");
 
 const route = createRoute({
   method: "get",

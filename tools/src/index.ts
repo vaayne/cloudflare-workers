@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono as Hono } from "@hono/zod-openapi";
 import { bearerAuth } from "hono/bearer-auth";
 import { register_reader_route } from "./apis/reader";
+import { register_searcher_route } from "./apis/searcher";
 import { register_summary_route } from "./apis/summary";
 
 type Bindings = {
@@ -20,7 +21,7 @@ app.use("/api/*", async (c, next) => {
 });
 
 // The OpenAPI documentation will be available at /doc
-app.doc("/doc", {
+app.doc("/docs", {
   openapi: "3.0.0",
   info: {
     version: "1.0.0",
@@ -38,12 +39,13 @@ app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
 app.get(
   "/ui",
   swaggerUI({
-    url: "/doc",
+    url: "/docs",
   })
 );
 
 // register routes
 register_reader_route(app);
+register_searcher_route(app);
 register_summary_route(app);
 
 app.get("/", async (c) => {
