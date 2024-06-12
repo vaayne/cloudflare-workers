@@ -23,6 +23,14 @@ const app = new Hono<{ Bindings: Bindings }>();
 // The OpenAPI documentation will be available at /doc
 app.doc("/docs", {
   openapi: "3.0.0",
+  servers: [
+    {
+      url: "https://tools.vaayne.com",
+    },
+    {
+      url: "http://localhost:8787",
+    },
+  ],
   info: {
     version: "1.0.0",
     title: "My API",
