@@ -1,8 +1,10 @@
-import { createRoute, z } from "@hono/zod-openapi";
-import { Context } from "hono";
+import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { streamSSE } from "hono/streaming";
+import {
+  createErrorResponse,
+  createSuccessResponse,
+} from "../libs/common_response";
 import { webSummary } from "../libs/web_summary";
-import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const ParamsSchema = z.object({
   url: z
@@ -11,7 +13,7 @@ const ParamsSchema = z.object({
     .openapi({
       param: {
         name: "url",
-        in: "path",
+        in: "query",
       },
       example: "https://example.com",
       description: "The URL of the page to summarize",
@@ -20,14 +22,14 @@ const ParamsSchema = z.object({
 
 const route = createRoute({
   method: "get",
-  path: "/api/summary/{url}",
+  path: "/api/summary",
   security: [
     {
       Bearer: [],
     },
   ],
   request: {
-    params: ParamsSchema,
+    query: ParamsSchema,
   },
   responses: {
     200: {
@@ -52,55 +54,56 @@ const route = createRoute({
   },
 });
 
-async function handle_summary(c: Context) {
-  const url = c.req.param("url");
-  const resp = await webSummary(url, null);
-  const reader = resp.body?.getReader();
+export function register_summary_route(app: OpenAPIHono<any>) {
+  app.openapi(route, async (c) => {
+    const { url } = c.req.valid("query");
+    const resp = await webSummary(url, null);
+    const reader = resp.body?.getReader();
 
-  if (!reader) {
-    return c.json(createErrorResponse(500, "Error reading the response"), 500);
-  }
-
-  if (c.req.header("accept") === "text/event-stream") {
-    return streamSSE(c, async (stream) => {
-      let result;
-      const decoder = new TextDecoder("utf-8");
-      const regex = /0:"([^"]*)"/g;
-
-      while (!(result && result.done)) {
-        result = await reader.read();
-        const chunk = decoder.decode(result.value || new Uint8Array(), {
-          stream: !result.done,
-        });
-        let match;
-        while ((match = regex.exec(chunk)) !== null) {
-          await stream.writeSSE({
-            data: match[1].replace(/\\n/g, "\n"),
-          });
-        }
-      }
-    });
-  }
-
-  let text = "";
-  let result;
-  const decoder = new TextDecoder("utf-8");
-  const regex = /0:"([^"]*)"/g;
-
-  while (!(result && result.done)) {
-    result = await reader.read();
-    const chunk = decoder.decode(result.value || new Uint8Array(), {
-      stream: !result.done,
-    });
-    let match;
-    while ((match = regex.exec(chunk)) !== null) {
-      text += match[1].replace(/\\n/g, "\n");
+    if (!reader) {
+      return c.json(
+        createErrorResponse(500, "Error reading the response"),
+        500
+      );
     }
-  }
 
-  return c.json(createSuccessResponse(text), 200);
-}
+    if (c.req.header("accept") === "text/event-stream") {
+      return streamSSE(c, async (stream) => {
+        let result;
+        const decoder = new TextDecoder("utf-8");
+        const regex = /0:"([^"]*)"/g;
 
-export function register_summary_route(app: any) {
-  app.openapi(route, handle_summary);
+        while (!(result && result.done)) {
+          result = await reader.read();
+          const chunk = decoder.decode(result.value || new Uint8Array(), {
+            stream: !result.done,
+          });
+          let match;
+          while ((match = regex.exec(chunk)) !== null) {
+            await stream.writeSSE({
+              data: match[1].replace(/\\n/g, "\n"),
+            });
+          }
+        }
+      });
+    }
+
+    let text = "";
+    let result;
+    const decoder = new TextDecoder("utf-8");
+    const regex = /0:"([^"]*)"/g;
+
+    while (!(result && result.done)) {
+      result = await reader.read();
+      const chunk = decoder.decode(result.value || new Uint8Array(), {
+        stream: !result.done,
+      });
+      let match;
+      while ((match = regex.exec(chunk)) !== null) {
+        text += match[1].replace(/\\n/g, "\n");
+      }
+    }
+
+    return c.json(createSuccessResponse(text), 200);
+  });
 }

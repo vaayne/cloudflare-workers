@@ -7,7 +7,7 @@ export async function webSummary(
   console.log(`summary url: ${url}`);
   if (page_content == null) {
     const doc = await webReader(url);
-    page_content = doc.data.content;
+    page_content = doc.content;
   }
 
   return await fetch("https://www.elmo.chat/api/v1/prompt", {

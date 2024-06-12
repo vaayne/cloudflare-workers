@@ -9,7 +9,7 @@ const InputSchema = z.object({
     .openapi({
       param: {
         name: "query",
-        in: "path",
+        in: "query",
       },
       example: "how to build a website",
       description: "The query to search for",
@@ -49,14 +49,14 @@ const ResponseSchema = z.object({
 
 const route = createRoute({
   method: "get",
-  path: "/api/searcher/{query}",
+  path: "/api/searcher",
   security: [
     {
       Bearer: [],
     },
   ],
   request: {
-    params: InputSchema,
+    query: InputSchema,
   },
   responses: {
     200: {
@@ -72,7 +72,7 @@ const route = createRoute({
 
 export function register_searcher_route(app: OpenAPIHono<any>) {
   app.openapi(route, async (c) => {
-    const { query } = c.req.valid("param");
+    const { query } = c.req.valid("query");
     if (!query) {
       return c.text("Please provide a URL");
     }

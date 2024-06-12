@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createErrorResponse, createSuccessResponse } from "../libs/common_response";
 import { webReader } from "../libs/jina_reader";
-import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const ParamsSchema = z.object({
   url: z
@@ -9,7 +9,7 @@ const ParamsSchema = z.object({
     .openapi({
       param: {
         name: "url",
-        in: "path",
+        in: "query",
       },
       example: "https://example.com",
       description: "The URL of the page to read",
@@ -44,14 +44,15 @@ const WebPageContentSchema = z.object({
 
 const route = createRoute({
   method: "get",
-  path: "/api/reader/{url}",
+  path: "/api/reader",
+  description: "Read the content of a web page",
   security: [
     {
       Bearer: [],
     },
   ],
   request: {
-    params: ParamsSchema,
+    query: ParamsSchema,
   },
   responses: {
     200: {
@@ -67,22 +68,18 @@ const route = createRoute({
 
 export function register_reader_route(app: OpenAPIHono<any>) {
   app.openapi(route, async (c) => {
-    const { url } = c.req.valid("param");
+    const { url } = c.req.valid("query");
     if (!url) {
       return c.text("Please provide a URL");
     }
     try {
       const resp = await webReader(url);
       return c.json(
-        createSuccessResponse({
-          title: resp.data.title,
-          url: resp.data.url,
-          content: resp.data.content,
-        }),
+        createSuccessResponse(resp),
         200
       );
     } catch (error) {
-      return c.json(createErrorResponse(500, "Failed to read the web page"), 500);
+      return c.json(createErrorResponse(500, `Failed to read the web page: ${error}`), 500);
     }
   });
 }
