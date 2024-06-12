@@ -8,7 +8,7 @@ async function fetchBuildId(): Promise<string> {
   try {
     const response = await fetch(BASE_URL);
     const pageContent = await response.text();
-    const regex = /"build_id":"(.*?)"/;
+    const regex = /"buildId":"(.*?)"/;
     const match = regex.exec(pageContent);
     return match ? match[1] : "";
   } catch (error) {
@@ -17,9 +17,17 @@ async function fetchBuildId(): Promise<string> {
   }
 }
 
-interface ResponseData {
+export type SearchData = {
+  id: number;
+  content: string;
+  pan: string;
+  image: string;
+  time: string;
+}
+
+type ResponseData = {
   pageProps: {
-    data: { data: any };
+    data: { data: SearchData[] };
   };
 }
 
@@ -28,7 +36,7 @@ interface ResponseData {
  * @param {string} query - The search query.
  * @returns {Promise<any>} The search results.
  */
-export async function search(query: string): Promise<any> {
+export async function search(query: string): Promise<SearchData[]> {
   try {
     const buildId = await fetchBuildId();
     if (!buildId) {
