@@ -14,13 +14,27 @@ const PansearchRequestSchema = z.object({
     }),
 });
 
-const PansearchResponseSchema = z
-  .object({
-    results: z.array(z.any()).openapi({
-      example: [{ id: 1, value: "sample result" }],
-    }),
-  })
-  .openapi("PansearchResponse");
+const SearchDataSchema = z.object({
+  id: z.number().openapi({ example: 1 }),
+  content: z.string().openapi({ example: "sample content" }),
+  pan: z.string().openapi({ example: "aliyundrive" }),
+  image: z.string().openapi({ example: "https://example.com/image.jpg" }),
+  time: z.string().openapi({ example: "2023-10-01T12:00:00Z" }),
+});
+
+const PansearchResponseSchema = z.object({
+  results: z.array(SearchDataSchema).openapi({
+    example: [
+      {
+        id: 1,
+        content: "sample content",
+        pan: "aliyundrive",
+        image: "https://example.com/image.jpg",
+        time: "2023-10-01T12:00:00Z",
+      },
+    ],
+  }),
+}).openapi("PansearchResponse");
 
 /**
  * Registers the pansearch route with the provided app.
