@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { search } from '../libs/pansearch';
+import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const PansearchRequestSchema = z.object({
   query: z
@@ -66,10 +67,10 @@ export function registerPansearchRoute(app: OpenAPIHono<any>) {
     }
     try {
       const results = await search(query);
-      return c.json({ results }, 200);
+      return c.json(createSuccessResponse({ results }), 200);
     } catch (error) {
       console.error("Search failed:", error);
-      return c.text("Search failed", 500);
+      return c.json(createErrorResponse(500, "Search failed"), 500);
     }
   });
 }

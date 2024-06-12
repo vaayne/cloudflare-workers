@@ -1,5 +1,6 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { webReader } from "../libs/jina_reader";
+import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const ParamsSchema = z.object({
   url: z
@@ -58,15 +59,18 @@ export function register_reader_route(app: OpenAPIHono<any>) {
     if (!url) {
       return c.text("Please provide a URL");
     }
-    const resp = await webReader(url);
-
-    return c.json(
-      {
-        title: resp.data.title,
-        url: resp.data.url,
-        content: resp.data.content,
-      },
-      200
-    );
+    try {
+      const resp = await webReader(url);
+      return c.json(
+        createSuccessResponse({
+          title: resp.data.title,
+          url: resp.data.url,
+          content: resp.data.content,
+        }),
+        200
+      );
+    } catch (error) {
+      return c.json(createErrorResponse(500, "Failed to read the web page"), 500);
+    }
   });
 }

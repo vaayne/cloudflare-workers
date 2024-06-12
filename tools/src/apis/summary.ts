@@ -2,6 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import { webSummary } from "../libs/web_summary";
+import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const ParamsSchema = z.object({
   url: z
@@ -49,7 +50,7 @@ async function handle_summary(c: Context) {
   const reader = resp.body?.getReader();
 
   if (!reader) {
-    return c.text("Error reading the response");
+    return c.json(createErrorResponse(500, "Error reading the response"), 500);
   }
 
   if (c.req.header("accept") === "text/event-stream") {
@@ -89,7 +90,7 @@ async function handle_summary(c: Context) {
     }
   }
 
-  return c.text(text);
+  return c.json(createSuccessResponse(text), 200);
 }
 
 export function register_summary_route(app: any) {
