@@ -16,19 +16,31 @@ const ParamsSchema = z.object({
     }),
 });
 
-const WebPageContentSchema = z
-  .object({
-    title: z.string().openapi({
-      example: "Example Page Title",
-    }),
-    url: z.string().openapi({
-      example: "https://example.com",
-    }),
-    content: z.string().openapi({
-      example: "This is the content of the page",
-    }),
-  })
-  .openapi("WebReaderResponseData");
+const WebPageContentSchema = z.object({
+  success: z.boolean().openapi({ example: true }),
+  data: z
+    .object({
+      title: z.string().openapi({
+        example: "Example Page Title",
+      }),
+      url: z.string().openapi({
+        example: "https://example.com",
+      }),
+      content: z.string().openapi({
+        example: "This is the content of the page",
+      }),
+    })
+    .optional()
+    .openapi("WebReaderResponseData"),
+  errors: z
+    .array(
+      z.object({
+        code: z.number().openapi({ example: 500 }),
+        message: z.string().openapi({ example: "error messages" }),
+      })
+    )
+    .openapi("ErrorResponse"),
+});
 
 const route = createRoute({
   method: "get",

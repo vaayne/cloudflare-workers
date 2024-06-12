@@ -32,11 +32,19 @@ const route = createRoute({
   responses: {
     200: {
       content: {
-        "text/plain": {
-          schema: z.string(),
-        },
-        "text/event-stream": {
-          schema: z.string(),
+        "application/json": {
+          schema: z.object({
+            success: z.boolean().openapi({ example: true }),
+            data: z.string().optional().openapi({ example: "Summary text" }),
+            errors: z
+              .array(
+                z.object({
+                  code: z.number().openapi({ example: 500 }),
+                  message: z.string().openapi({ example: "error messages" }),
+                })
+              )
+              .openapi("ErrorResponse"),
+          }),
         },
       },
       description: "Returns a summary of a web page",

@@ -16,23 +16,36 @@ const InputSchema = z.object({
     }),
 });
 
-const ResponseSchema = z
-  .array(
-    z.object({
-      title: z.string().openapi({
-        example: "Example Page Title",
-      }),
-      url: z.string().openapi({
-        example: "https://example.com",
-      }),
-      content: z.string().openapi({
-        example: "This is the content of the page",
-      }),
-      description: z.string().openapi({
-        example: "This is the description of the page",
-    }),
-  })
-  .openapi("WebSearchResponseData"));
+const ResponseSchema = z.object({
+  success: z.boolean().openapi({ example: true }),
+  data: z
+    .array(
+      z.object({
+        title: z.string().openapi({
+          example: "Example Page Title",
+        }),
+        url: z.string().openapi({
+          example: "https://example.com",
+        }),
+        content: z.string().openapi({
+          example: "This is the content of the page",
+        }),
+        description: z.string().openapi({
+          example: "This is the description of the page",
+        }),
+      })
+    )
+    .optional()
+    .openapi("WebSearchResponseData"),
+  errors: z
+    .array(
+      z.object({
+        code: z.number().openapi({ example: 500 }),
+        message: z.string().openapi({ example: "error messages" }),
+      })
+    )
+    .openapi("ErrorResponse"),
+});
 
 const route = createRoute({
   method: "get",
