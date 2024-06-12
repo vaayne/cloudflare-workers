@@ -1,13 +1,26 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { search } from '../libs/pansearch';
 
-// Define the schema for the request parameters
 const PansearchRequestSchema = z.object({
-  query: z.string().min(1, "Query is required")
+  query: z
+    .string()
+    .min(1)
+    .openapi({ example: "sample query", description: "Search query" })
+    .openapi({
+      param: {
+        name: "query",
+        in: "query",
+      },
+    }),
 });
 
-// Define the schema for the response
-const PansearchResponseSchema = z.array(z.any());
+const PansearchResponseSchema = z
+  .object({
+    results: z.array(z.any()).openapi({
+      example: [{ id: 1, value: "sample result" }],
+    }),
+  })
+  .openapi("PansearchResponse");
 
 /**
  * Registers the pansearch route with the provided app.
