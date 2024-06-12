@@ -1,10 +1,9 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono as Hono } from "@hono/zod-openapi";
-import { bearerAuth } from "hono/bearer-auth";
+import { registerPansearchRoute } from "./apis/pansearch";
 import { register_reader_route } from "./apis/reader";
 import { register_searcher_route } from "./apis/searcher";
 import { register_summary_route } from "./apis/summary";
-import { registerPansearchRoute } from "./apis/pansearch";
 
 type Bindings = {
   API_TOKEN: string;
@@ -14,12 +13,12 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // set global middlewares
 // Bearer Auth Middleware
-app.use("/api/*", async (c, next) => {
-  const auth = bearerAuth({
-    token: c.env.API_TOKEN,
-  });
-  return auth(c, next);
-});
+// app.use("/api/*", async (c, next) => {
+//   const auth = bearerAuth({
+//     token: c.env.API_TOKEN,
+//   });
+//   return auth(c, next);
+// });
 
 // The OpenAPI documentation will be available at /doc
 app.doc("/docs", {
@@ -33,7 +32,7 @@ app.doc("/docs", {
 // Register the security scheme: Bearer
 app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
   type: "http",
-  scheme: "bearer",
+  scheme: "Bearer",
 });
 
 // The Swagger UI will be available at /ui
