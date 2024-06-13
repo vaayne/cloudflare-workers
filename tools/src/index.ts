@@ -7,6 +7,7 @@ import { register_summary_route } from "./apis/summary";
 
 type Bindings = {
   API_TOKEN: string;
+  KV: KVNamespace;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();

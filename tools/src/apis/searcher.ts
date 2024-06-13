@@ -1,6 +1,8 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { createErrorResponse, createSuccessResponse } from "../libs/common_response";
 import { webSearcher } from "../libs/jina_reader";
+import { invokeWithCache } from "../libs/cache";
+
 
 const InputSchema = z.object({
   query: z
@@ -78,7 +80,7 @@ export function register_searcher_route(app: OpenAPIHono<any>) {
       return c.text("Please provide a URL");
     }
     try {
-      const searchResponse = await webSearcher(query);
+      const searchResponse = await invokeWithCache(c.env.KV, query, webSearcher, [query]);
       return c.json(createSuccessResponse(searchResponse), 200);
     } catch (error) {
       return c.json(createErrorResponse(500, "Search failed"), 500);

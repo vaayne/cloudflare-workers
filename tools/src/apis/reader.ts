@@ -1,4 +1,5 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { invokeWithCache } from "../libs/cache";
 import { createErrorResponse, createSuccessResponse } from "../libs/common_response";
 import { webReader } from "../libs/jina_reader";
 
@@ -73,7 +74,7 @@ export function register_reader_route(app: OpenAPIHono<any>) {
       return c.text("Please provide a URL");
     }
     try {
-      const resp = await webReader(url);
+      const resp = await invokeWithCache(c.env.KV, url, webReader, [url]);
       return c.json(
         createSuccessResponse(resp),
         200
