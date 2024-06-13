@@ -68,25 +68,31 @@ export function register_summary_route(app: OpenAPIHono<any>) {
       );
     }
 
-    if (c.req.header("accept") === "text/event-stream") {
-      return streamSSE(c, async (stream) => {
-        let result;
-        const decoder = new TextDecoder("utf-8");
-        const regex = /0:"([^"]*)"/g;
+    const processStream = async (stream: any) => {
+      let result;
+      const decoder = new TextDecoder("utf-8");
+      const regex = /0:"([^"]*)"/g;
 
-        while (!(result && result.done)) {
-          result = await reader.read();
-          const chunk = decoder.decode(result.value || new Uint8Array(), {
-            stream: !result.done,
-          });
-          let match;
-          while ((match = regex.exec(chunk)) !== null) {
+      while (!(result && result.done)) {
+        result = await reader.read();
+        const chunk = decoder.decode(result.value || new Uint8Array(), {
+          stream: !result.done,
+        });
+        let match;
+        while ((match = regex.exec(chunk)) !== null) {
+          if (stream) {
             await stream.writeSSE({
               data: match[1].replace(/\\n/g, "\n"),
             });
+          } else {
+            text += match[1].replace(/\\n/g, "\n");
           }
         }
-      });
+      }
+    };
+
+    if (c.req.header("accept") === "text/event-stream") {
+      return streamSSE(c, async (stream) => await processStream(stream));
     }
 
     let text = "";

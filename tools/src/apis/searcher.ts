@@ -77,7 +77,6 @@ export function register_searcher_route(app: OpenAPIHono<any>) {
     if (!query) {
       return c.text("Please provide a URL");
     }
-    const searchResponse = await webSearcher(query);
     try {
       const searchResponse = await webSearcher(query);
       return c.json(createSuccessResponse(searchResponse), 200);
