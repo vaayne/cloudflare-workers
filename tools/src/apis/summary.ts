@@ -23,6 +23,7 @@ const ParamsSchema = z.object({
 const route = createRoute({
   method: "get",
   path: "/api/summary",
+  description: "Use LLM to read and summarize a web page.",
   security: [
     {
       Bearer: [],

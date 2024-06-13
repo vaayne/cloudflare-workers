@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { createErrorResponse, createSuccessResponse } from "../libs/common_response";
 import { webSearcher } from "../libs/jina_reader";
-import { createSuccessResponse, createErrorResponse } from "../libs/common_response";
 
 const InputSchema = z.object({
   query: z
@@ -50,6 +50,7 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: "get",
   path: "/api/searcher",
+  description: "Search the web and return the top five results with their URLs and contents, each in clean, LLM-friendly text.",
   security: [
     {
       Bearer: [],
@@ -65,7 +66,7 @@ const route = createRoute({
           schema: ResponseSchema,
         },
       },
-      description: "Returns the content of a web page",
+      description: "Search response in array of objects",
     },
   },
 });
