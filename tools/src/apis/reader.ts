@@ -12,7 +12,7 @@ const ParamsSchema = z.object({
         in: "query",
       },
       example: "https://example.com",
-      description: "The URL of the page to read",
+      description: "URL to retrieve content from.",
     }),
 });
 
@@ -45,7 +45,7 @@ const WebPageContentSchema = z.object({
 const route = createRoute({
   method: "get",
   path: "/api/reader",
-  description: "Read the content of a web page",
+  description: "Retrieve LLM-friendly content from a URL.",
   security: [
     {
       Bearer: [],
