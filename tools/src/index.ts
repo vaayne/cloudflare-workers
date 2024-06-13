@@ -6,8 +6,8 @@ import { register_searcher_route } from "./apis/searcher";
 import { register_summary_route } from "./apis/summary";
 
 type Bindings = {
-  API_TOKEN: string;
-  KV: KVNamespace;
+    API_TOKEN: string;
+    KV: KVNamespace;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -23,33 +23,33 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // The OpenAPI documentation will be available at /doc
 app.doc("/docs", {
-  openapi: "3.0.0",
-  servers: [
-    {
-      url: "https://tools.vaayne.com",
+    openapi: "3.0.0",
+    servers: [
+        {
+            url: "https://tools.vaayne.com",
+        },
+        {
+            url: "http://localhost:8787",
+        },
+    ],
+    info: {
+        version: "1.0.0",
+        title: "My API",
     },
-    {
-      url: "http://localhost:8787",
-    },
-  ],
-  info: {
-    version: "1.0.0",
-    title: "My API",
-  },
 });
 
 // Register the security scheme: Bearer
 app.openAPIRegistry.registerComponent("securitySchemes", "Bearer", {
-  type: "http",
-  scheme: "Bearer",
+    type: "http",
+    scheme: "Bearer",
 });
 
 // The Swagger UI will be available at /ui
 app.get(
-  "/ui",
-  swaggerUI({
-    url: "/docs",
-  })
+    "/ui",
+    swaggerUI({
+        url: "/docs",
+    })
 );
 
 // register routes
@@ -59,7 +59,7 @@ register_summary_route(app);
 registerPansearchRoute(app);
 
 app.get("/", async (c) => {
-  return c.redirect("/ui")
-})
+    return c.redirect("/ui");
+});
 
 export default app;
