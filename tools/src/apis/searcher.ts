@@ -1,10 +1,10 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { invokeWithCache } from "../libs/cache";
 import {
     createErrorResponse,
     createSuccessResponse,
 } from "../libs/common_response";
 import { webSearcher } from "../libs/jina_reader";
-import { invokeWithCache } from "../libs/cache";
 
 const InputSchema = z.object({
     query: z
@@ -53,7 +53,7 @@ const ResponseSchema = z.object({
 
 const route = createRoute({
     method: "get",
-    path: "/api/searcher",
+    path: "/api/web_searcher",
     description:
         "Search the web and return the top five results with their URLs and contents, each in clean, LLM-friendly text.",
     security: [
@@ -87,7 +87,7 @@ export function register_searcher_route(app: OpenAPIHono<any>) {
                 c.env.KV,
                 query,
                 webSearcher,
-                [query]
+                [{ query }]
             );
             return c.json(createSuccessResponse(searchResponse), 200);
         } catch (error) {

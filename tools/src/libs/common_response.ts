@@ -1,3 +1,5 @@
+import { z } from "@hono/zod-openapi";
+
 export type CommonResponse<T> = {
     success: boolean;
     data?: T;
@@ -20,4 +22,19 @@ export function createErrorResponse(
         success: false,
         errors: [{ code, message }],
     };
+}
+
+export function buildCommonResponseSchema(dataSchema: any) {
+    return z.object({
+        success: z.boolean().openapi({ example: true }),
+        data: dataSchema,
+        errors: z
+            .array(
+                z.object({
+                    code: z.number().openapi({ example: 500 }),
+                    message: z.string().openapi({ example: "error messages" }),
+                })
+            )
+            .openapi("ErrorResponse"),
+    });
 }

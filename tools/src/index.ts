@@ -1,5 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
-import { OpenAPIHono as Hono } from "@hono/zod-openapi";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { registerInvokeRoute } from "./apis/invoke";
 import { registerPansearchRoute } from "./apis/pansearch";
 import { register_reader_route } from "./apis/reader";
 import { register_searcher_route } from "./apis/searcher";
@@ -10,7 +11,19 @@ type Bindings = {
     KV: KVNamespace;
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new OpenAPIHono<{ Bindings: Bindings }>({
+    defaultHook: (result, c) => {
+        if (!result.success) {
+            return c.json(
+                {
+                    success: false,
+                    errors: result.error.issues,
+                },
+                400
+            );
+        }
+    },
+});
 
 // set global middlewares
 // Bearer Auth Middleware
@@ -57,6 +70,7 @@ register_reader_route(app);
 register_searcher_route(app);
 register_summary_route(app);
 registerPansearchRoute(app);
+registerInvokeRoute(app);
 
 app.get("/", async (c) => {
     return c.redirect("/ui");

@@ -4,25 +4,11 @@ import {
     createErrorResponse,
     createSuccessResponse,
 } from "../libs/common_response";
-import { webSummary } from "../libs/web_summary";
-
-const ParamsSchema = z.object({
-    url: z
-        .string()
-        .min(5)
-        .openapi({
-            param: {
-                name: "url",
-                in: "query",
-            },
-            example: "https://example.com",
-            description: "The URL of the page to summarize",
-        }),
-});
+import { SummaryRequestSchema, webSummary } from "../libs/web_summary";
 
 const route = createRoute({
     method: "get",
-    path: "/api/summary",
+    path: "/api/web_summary",
     description: "Use LLM to read and summarize a web page.",
     security: [
         {
@@ -30,7 +16,7 @@ const route = createRoute({
         },
     ],
     request: {
-        query: ParamsSchema,
+        query: SummaryRequestSchema,
     },
     responses: {
         200: {
@@ -62,60 +48,25 @@ const route = createRoute({
 
 export function register_summary_route(app: OpenAPIHono<any>) {
     app.openapi(route, async (c) => {
-        const { url } = c.req.valid("query");
-        const resp = await webSummary(url, null);
-        const reader = resp.body?.getReader();
-
-        if (!reader) {
+        try {
+            const args = SummaryRequestSchema.parse(c.req.query());
+            const isStream =
+                args.stream === "true" ||
+                c.req.header("accept") === "text/event-stream";
+            console.log("web_summary args:", args);
+            if (isStream) {
+                return streamSSE(c, async (stream) => {
+                    await webSummary(args, stream);
+                });
+            }
+            const data = await webSummary(args);
+            return c.json(createSuccessResponse({ data }));
+        } catch (error) {
+            console.error("Error processing request:", error);
             return c.json(
-                createErrorResponse(500, "Error reading the response"),
+                createErrorResponse(500, "Internal Server Error"),
                 500
             );
         }
-
-        const processStream = async (stream: any) => {
-            let result;
-            const decoder = new TextDecoder("utf-8");
-            const regex = /0:"([^"]*)"/g;
-
-            while (!(result && result.done)) {
-                result = await reader.read();
-                const chunk = decoder.decode(result.value || new Uint8Array(), {
-                    stream: !result.done,
-                });
-                let match;
-                while ((match = regex.exec(chunk)) !== null) {
-                    if (stream) {
-                        await stream.writeSSE({
-                            data: match[1].replace(/\\n/g, "\n"),
-                        });
-                    } else {
-                        text += match[1].replace(/\\n/g, "\n");
-                    }
-                }
-            }
-        };
-
-        if (c.req.header("accept") === "text/event-stream") {
-            return streamSSE(c, async (stream) => await processStream(stream));
-        }
-
-        let text = "";
-        let result;
-        const decoder = new TextDecoder("utf-8");
-        const regex = /0:"([^"]*)"/g;
-
-        while (!(result && result.done)) {
-            result = await reader.read();
-            const chunk = decoder.decode(result.value || new Uint8Array(), {
-                stream: !result.done,
-            });
-            let match;
-            while ((match = regex.exec(chunk)) !== null) {
-                text += match[1].replace(/\\n/g, "\n");
-            }
-        }
-
-        return c.json(createSuccessResponse(text), 200);
     });
 }

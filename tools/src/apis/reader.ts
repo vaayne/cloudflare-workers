@@ -1,54 +1,19 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { invokeWithCache } from "../libs/cache";
 import {
+    buildCommonResponseSchema,
     createErrorResponse,
     createSuccessResponse,
 } from "../libs/common_response";
-import { webReader } from "../libs/jina_reader";
-
-const ParamsSchema = z.object({
-    url: z
-        .string()
-        .min(5)
-        .openapi({
-            param: {
-                name: "url",
-                in: "query",
-            },
-            example: "https://example.com",
-            description: "URL to retrieve content from.",
-        }),
-});
-
-const WebPageContentSchema = z.object({
-    success: z.boolean().openapi({ example: true }),
-    data: z
-        .object({
-            title: z.string().openapi({
-                example: "Example Page Title",
-            }),
-            url: z.string().openapi({
-                example: "https://example.com",
-            }),
-            content: z.string().openapi({
-                example: "This is the content of the page",
-            }),
-        })
-        .optional()
-        .openapi("WebReaderResponseData"),
-    errors: z
-        .array(
-            z.object({
-                code: z.number().openapi({ example: 500 }),
-                message: z.string().openapi({ example: "error messages" }),
-            })
-        )
-        .openapi("ErrorResponse"),
-});
+import {
+    JinaReaderDataSchema,
+    ReaderRequestSchema,
+    webReader,
+} from "../libs/jina_reader";
 
 const route = createRoute({
     method: "get",
-    path: "/api/reader",
+    path: "/api/web_reader",
     description: "Retrieve LLM-friendly content from a URL.",
     security: [
         {
@@ -56,13 +21,13 @@ const route = createRoute({
         },
     ],
     request: {
-        query: ParamsSchema,
+        query: ReaderRequestSchema,
     },
     responses: {
         200: {
             content: {
                 "application/json": {
-                    schema: WebPageContentSchema,
+                    schema: buildCommonResponseSchema(JinaReaderDataSchema),
                 },
             },
             description: "Returns the content of a web page",
@@ -77,7 +42,9 @@ export function register_reader_route(app: OpenAPIHono<any>) {
             return c.text("Please provide a URL");
         }
         try {
-            const resp = await invokeWithCache(c.env.KV, url, webReader, [url]);
+            const resp = await invokeWithCache(c.env.KV, url, webReader, [
+                { url: url },
+            ]);
             return c.json(createSuccessResponse(resp), 200);
         } catch (error) {
             return c.json(

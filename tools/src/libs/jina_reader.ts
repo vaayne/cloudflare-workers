@@ -1,3 +1,42 @@
+import { z } from "@hono/zod-openapi";
+
+export const ReaderRequestSchema = z.object({
+    url: z
+        .string()
+        .url()
+        .openapi({
+            param: {
+                name: "url",
+                in: "query",
+            },
+            example: "https://example.com",
+            description: "URL to retrieve content from.",
+        }),
+});
+
+export const SearcherRequestSchema = z.object({
+    query: z.string().min(1).openapi({
+        example: "how to ...",
+        description: "query to search for.",
+    }),
+});
+
+export const JinaReaderDataSchema = z.object({
+    content: z.string().openapi({
+        example: "This is the content of the page",
+    }),
+    title: z.string().openapi({
+        example: "Example Page Title",
+    }),
+    url: z.string().openapi({
+        example: "https://example.com",
+    }),
+    description: z.string().openapi({
+        example: "This is the description of the page",
+    }),
+});
+export type JinaReaderData = z.infer<typeof JinaReaderDataSchema>;
+
 type JinaReaderResponse = {
     code: number;
     status: number;
@@ -10,16 +49,11 @@ type JinaSeaecherResponse = {
     data: JinaReaderData[];
 };
 
-export type JinaReaderData = {
-    content: string;
-    title: string;
-    url: string;
-    description: string;
-};
-
-export async function webReader(url: string): Promise<JinaReaderData> {
-    console.log(`webReader url: ${url}`);
-    const response = await fetch(`https://r.jina.ai/${url}`, {
+export async function webReader(
+    args: z.infer<typeof ReaderRequestSchema>
+): Promise<JinaReaderData> {
+    console.log(`webReader url: ${args.url}`);
+    const response = await fetch(`https://r.jina.ai/${args.url}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -30,9 +64,11 @@ export async function webReader(url: string): Promise<JinaReaderData> {
     return resp.data;
 }
 
-export async function webSearcher(query: string): Promise<JinaReaderData[]> {
-    console.log(`webSearcher query: ${query}`);
-    const response = await fetch(`https://s.jina.ai/${query}`, {
+export async function webSearcher(
+    args: z.infer<typeof SearcherRequestSchema>
+): Promise<JinaReaderData[]> {
+    console.log(`webSearcher query: ${args.query}`);
+    const response = await fetch(`https://s.jina.ai/${args.query}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
