@@ -40,9 +40,8 @@ async function processStream(reader: any, stream?: any) {
             console.log(formattedText);
             if (stream) {
                 await stream.writeSSE({ data: formattedText });
-            } else {
-                text += formattedText;
             }
+            text += formattedText;
         }
     }
     return text;

@@ -48,18 +48,33 @@ const route = createRoute({
 
 export function register_summary_route(app: OpenAPIHono<any>) {
     app.openapi(route, async (c) => {
+        const kv = c.env.KV;
         try {
             const args = SummaryRequestSchema.parse(c.req.query());
+            const cacheKey = `$eb_summary:${JSON.stringify(args)}`;
+            const cacheResult = await kv.get(cacheKey);
+            if (cacheResult) {
+                console.debug("Cache hit for args:", cacheKey);
+                return c.json(
+                    createSuccessResponse({ data: JSON.parse(cacheResult) })
+                );
+            }
             const isStream =
                 args.stream === "true" ||
                 c.req.header("accept") === "text/event-stream";
             console.log("web_summary args:", args);
             if (isStream) {
                 return streamSSE(c, async (stream) => {
-                    await webSummary(args, stream);
+                    const data = await webSummary(args, stream);
+                    await kv.put(cacheKey, JSON.stringify(data), {
+                        expirationTtl: 24 * 3600, // 24 hours
+                    });
                 });
             }
             const data = await webSummary(args);
+            await kv.put(cacheKey, JSON.stringify(data), {
+                expirationTtl: 24 * 3600, // 24 hours
+            });
             return c.json(createSuccessResponse({ data }));
         } catch (error) {
             console.error("Error processing request:", error);
