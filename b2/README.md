@@ -4,6 +4,8 @@ This project enables secure access to private [Backblaze B2](https://www.backbla
 
 This repository is a fork of [backblaze-b2-samples/cloudflare-b2](https://github.com/backblaze-b2-samples/cloudflare-b2), tailored for enhanced functionality and security.
 
+Follow the instructions below to set up your Cloudflare Worker for Backblaze B2 access: [Deliver Private Backblaze B2 Content Through Cloudflare CDN](https://www.backblaze.com/docs/cloud-storage-deliver-private-backblaze-b2-content-through-cloudflare-cdn#create-a-cloudflare-worker)
+
 ## Configuration
 
 To set up your Cloudflare Worker for Backblaze B2 access, follow these steps:
