@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "cloudflare-b2",
+  "version": "1.0.0",
+  "description": "Provide access to a private Backblaze B2 bucket via a Cloudflare Worker",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write '**/*.{js,css,json,md}'",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "author": "Pat Patterson <pat@backblaze.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "aws4fetch": "^1.0.18",
+    "wrangler": "^3.7.0"
+  }
+}
