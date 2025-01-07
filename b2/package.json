@@ -16,6 +16,6 @@
   },
   "dependencies": {
     "aws4fetch": "^1.0.18",
-    "wrangler": "^3.7.0"
+    "wrangler": "^3.99.0"
   }
 }

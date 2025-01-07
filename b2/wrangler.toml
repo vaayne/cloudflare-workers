@@ -6,7 +6,8 @@ compatibility_date = "2023-09-04"
 main = "index.js"
 
 routes = [
-	{ pattern = "s3.vaayne.com", custom_domain = true }
+	{ pattern = "s3.vaayne.com", custom_domain = true },
+	{ pattern = "s3.recally.io", custom_domain = true }
 ]
 
 [vars]

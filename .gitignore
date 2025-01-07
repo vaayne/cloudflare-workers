@@ -171,3 +171,4 @@ dist
 .dev.vars
 .vscode
 .aider*
+.DS_Store
