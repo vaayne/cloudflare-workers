@@ -1,6 +1,0 @@
-name = "b2-worker"
-main = "src/index.ts"
-compatibility_date = "2022-12-26"
-
-[triggers]
-crons = ["5 */4 * * *"]
