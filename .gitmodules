@@ -1,0 +1,3 @@
+[submodule "cloudflare-docker-proxy"]
+	path = cloudflare-docker-proxy
+	url = git@github.com:vaayne/cloudflare-docker-proxy.git
